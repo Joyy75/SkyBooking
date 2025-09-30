@@ -21,8 +21,15 @@ spl_autoload_register(function ($class) {
 	}
 });
 
-// Start session for simple flash messaging
+// Configure session for persistence
 if (session_status() === PHP_SESSION_NONE) {
+	// Set session cookie to last 30 days
+	ini_set('session.cookie_lifetime', '2592000');
+	ini_set('session.gc_maxlifetime', '2592000');
+	// Use cookies only (more reliable than URL params)
+	ini_set('session.use_only_cookies', '1');
+	// Strict session management
+	ini_set('session.use_strict_mode', '1');
 	session_start();
 }
 

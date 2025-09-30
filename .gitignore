@@ -1,7 +1,5 @@
-# Database
-*.db
-*.sqlite
-database.db
+# Database - allow deployment of main database
+!storage/airticket.sqlite
 
 # Environment
 .env
