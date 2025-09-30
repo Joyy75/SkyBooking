@@ -1,5 +1,7 @@
-# Database - include for deployment
-!storage/airticket.sqlite
+# Database
+*.db
+*.sqlite
+database.db
 
 # Environment
 .env
