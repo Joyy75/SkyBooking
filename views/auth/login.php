@@ -1,9 +1,7 @@
 <div class="max-w-md mx-auto">
 	<div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-indigo-100 dark:border-gray-700">
 		<div class="text-center mb-8">
-			<div class="inline-block bg-gradient-to-r from-indigo-600 to-purple-600 p-3 rounded-xl mb-4">
-				<i class="fas fa-user-circle text-white text-3xl"></i>
-			</div>
+			
 			<h2 class="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Welcome Back</h2>
 			<p class="text-gray-600 dark:text-gray-400 mt-2">Login to access your account</p>
 		</div>
