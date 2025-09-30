@@ -6,22 +6,20 @@ description = "Air Ticket Booking System"
 [dependencies]
 "php/php" = "^8.2"
 
-[[module]]
-name = "skybooking"
-source = "."
-abi = "wasi"
-
 [fs]
 "/app" = "."
-"/storage" = "storage"
 
-[command]
-name = "skybooking"
-module = "skybooking"
-runner = "https://webc.org/runner/wasi"
-
-[[command.annotations.wasi.env]]
-DOCUMENT_ROOT = "/app"
+[[command]]
+name = "run"
+module = "php/php:php"
+runner = "wasi"
 
 [command.annotations.wasi]
+env = ["DOCUMENT_ROOT=/app"]
 main-args = ["-S", "0.0.0.0:8080", "-t", "/app"]
+
+[command.annotations.wasi.atom]
+volumes = [
+  { host = ".", guest = "/app" },
+  { name = "storage", guest = "/app/storage" }
+]
