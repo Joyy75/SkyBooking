@@ -1,16 +1,22 @@
 <?php /** @var array $notifications */ ?>
-<div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl shadow-xl p-8 border border-indigo-100 dark:border-gray-700">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-        <h2 class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-2">
+<div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl shadow-xl p-6 sm:p-8 border border-indigo-100 dark:border-gray-700">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <h2 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-2">
             <span class="iconify" data-icon="mdi:bell"></span>
             <span><?= t('notifications') ?></span>
         </h2>
-        <?php if (!empty($notifications)): ?>
-            <a href="index.php?r=user/notifications/mark-all" class="inline-flex items-center gap-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition">
-                <span class="iconify" data-icon="mdi:check-all"></span>
-                <span>Mark all as read</span>
+        <div class="flex flex-wrap gap-2">
+            <a href="index.php?r=flights/search" class="inline-flex items-center gap-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+                <span class="iconify" data-icon="mdi:arrow-left"></span>
+                <span>Back</span>
             </a>
-        <?php endif; ?>
+            <?php if (!empty($notifications)): ?>
+                <a href="index.php?r=user/notifications/mark-all" class="inline-flex items-center gap-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-4 py-2 rounded-lg font-medium hover:bg-indigo-200 dark:hover:bg-indigo-900/50 transition">
+                    <span class="iconify" data-icon="mdi:check-all"></span>
+                    <span>Mark all read</span>
+                </a>
+            <?php endif; ?>
+        </div>
     </div>
     <?php if (empty($notifications)): ?>
         <div class="text-center py-12">

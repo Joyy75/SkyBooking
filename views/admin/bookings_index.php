@@ -15,10 +15,6 @@
 					<span class="iconify" data-icon="mdi:arrow-left"></span>
 					<span>Dashboard</span>
 				</a>
-				<a href="index.php?r=admin/bookings/new" class="inline-flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition">
-					<span class="iconify" data-icon="mdi:plus"></span>
-					<span>New Booking</span>
-				</a>
 			</div>
 		</div>
 	</div>
@@ -27,10 +23,7 @@
 	<?php if (empty($bookings)): ?>
 		<div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl shadow-xl p-12 text-center border border-green-100 dark:border-gray-700">
 			<i class="fas fa-ticket-alt text-gray-300 text-6xl mb-4"></i>
-			<p class="text-gray-600 text-lg mb-4">No bookings yet.</p>
-			<a href="index.php?r=admin/bookings/new" class="inline-block bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition">
-				<i class="fas fa-plus mr-2"></i>Add Your First Booking
-			</a>
+			<p class="text-gray-600 text-lg">No bookings yet. Bookings will appear here when users book flights.</p>
 		</div>
 	<?php else: ?>
 		<div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl shadow-xl border border-green-100 dark:border-gray-700 overflow-hidden">

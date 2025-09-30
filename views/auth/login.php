@@ -21,7 +21,7 @@
 			<button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transform hover:-translate-y-0.5 transition">
 				<i class="fas fa-sign-in-alt mr-2"></i>Login
 			</button>
-			<div class="flex gap-3">
+			<div class="flex flex-col sm:flex-row gap-3">
 				<a href="index.php?r=auth/register" class="flex-1 text-center bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-3 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition">
 					<i class="fas fa-user-plus mr-2"></i>Create Account
 				</a>
