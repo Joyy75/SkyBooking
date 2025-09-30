@@ -59,11 +59,11 @@
 								<div class="col-span-6 h-4"></div>
 							<?php endif; ?>
 							<button type="button" 
-								class="seat-btn <?= $seatClass ?> aspect-square rounded-lg font-bold text-sm transition-all duration-200 <?= $isTaken ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed' : 'bg-white dark:bg-gray-700 border-2 border-indigo-300 dark:border-indigo-600 text-indigo-700 dark:text-indigo-400 hover:bg-indigo-600 hover:text-white hover:scale-110 cursor-pointer' ?>"
+								class="seat-btn <?= $seatClass ?> aspect-square rounded-xl font-bold text-sm transition-all duration-200 shadow-md hover:shadow-xl flex flex-col items-center justify-center <?= $isTaken ? 'bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900/40 dark:to-red-800/40 border-2 border-red-400 dark:border-red-600 text-red-700 dark:text-red-300 cursor-not-allowed opacity-75' : 'bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/30 dark:to-green-900/30 border-2 border-emerald-400 dark:border-emerald-500 text-emerald-700 dark:text-emerald-300 hover:from-indigo-600 hover:to-purple-600 hover:text-white hover:border-indigo-500 hover:scale-110 cursor-pointer' ?>"
 								data-seat="<?= $i ?>"
 								<?= $isTaken ? 'disabled' : '' ?>>
-								<i class="fas fa-chair block mb-1"></i>
-								<?= $i ?>
+								<i class="fas <?= $isTaken ? 'fa-times' : 'fa-chair' ?> text-lg mb-1"></i>
+								<span class="text-xs font-bold"><?= $i ?></span>
 							</button>
 					<?php endfor; ?>
 				</div>
@@ -71,16 +71,22 @@
 				<!-- Legend -->
 				<div class="flex flex-wrap justify-center gap-4 md:gap-6 mt-8 text-sm">
 					<div class="flex items-center gap-2">
-						<div class="w-8 h-8 bg-white dark:bg-gray-700 border-2 border-indigo-300 dark:border-indigo-600 rounded-lg"></div>
-						<span class="text-gray-700 dark:text-gray-300 font-medium">Available</span>
+						<div class="w-10 h-10 bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/30 dark:to-green-900/30 border-2 border-emerald-400 dark:border-emerald-500 rounded-xl flex items-center justify-center shadow-md">
+							<i class="fas fa-chair text-emerald-700 dark:text-emerald-300"></i>
+						</div>
+						<span class="text-gray-700 dark:text-gray-200 font-semibold">Available</span>
 					</div>
 					<div class="flex items-center gap-2">
-						<div class="w-8 h-8 bg-indigo-600 rounded-lg"></div>
-						<span class="text-gray-700 dark:text-gray-300 font-medium">Selected</span>
+						<div class="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+							<i class="fas fa-check text-white"></i>
+						</div>
+						<span class="text-gray-700 dark:text-gray-200 font-semibold">Selected</span>
 					</div>
 					<div class="flex items-center gap-2">
-						<div class="w-8 h-8 bg-gray-300 dark:bg-gray-600 rounded-lg"></div>
-						<span class="text-gray-700 dark:text-gray-300 font-medium">Taken</span>
+						<div class="w-10 h-10 bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900/40 dark:to-red-800/40 border-2 border-red-400 dark:border-red-600 rounded-xl flex items-center justify-center shadow-md">
+							<i class="fas fa-times text-red-700 dark:text-red-300"></i>
+						</div>
+						<span class="text-gray-700 dark:text-gray-200 font-semibold">Booked</span>
 					</div>
 				</div>
 			</div>
@@ -146,20 +152,22 @@
 			if (selectedSeat) {
 				const prevBtn = document.querySelector(`.seat-btn[data-seat="${selectedSeat}"]`);
 				if (prevBtn) {
-					prevBtn.classList.remove('bg-indigo-600', 'text-white', 'scale-110', 'shadow-lg');
-					prevBtn.classList.add('bg-white', 'border-2', 'border-indigo-300', 'text-indigo-700');
+					prevBtn.classList.remove('from-indigo-600', 'to-purple-600', 'text-white', 'scale-110', 'shadow-xl', 'border-indigo-500');
+					prevBtn.classList.add('from-emerald-50', 'to-green-50', 'border-emerald-400', 'text-emerald-700');
+					prevBtn.innerHTML = '<i class="fas fa-chair text-lg mb-1"></i><span class="text-xs font-bold">' + selectedSeat + '</span>';
 				}
 			}
 
 			// Select new
 			selectedSeat = seatNum;
-			this.classList.remove('bg-white', 'border-2', 'border-indigo-300', 'text-indigo-700');
-			this.classList.add('bg-indigo-600', 'text-white', 'scale-110', 'shadow-lg');
+			this.classList.remove('from-emerald-50', 'to-green-50', 'border-emerald-400', 'text-emerald-700');
+			this.classList.add('from-indigo-600', 'to-purple-600', 'text-white', 'scale-110', 'shadow-xl', 'border-indigo-500');
+			this.innerHTML = '<i class="fas fa-check text-lg mb-1"></i><span class="text-xs font-bold">' + seatNum + '</span>';
 			
 			// Update form
 			seatInput.value = seatNum;
 			seatDisplay.textContent = `Seat #${seatNum}`;
-			seatDisplay.classList.remove('text-gray-500');
+			seatDisplay.classList.remove('text-gray-500', 'bg-gray-100');
 			seatDisplay.classList.add('text-indigo-700', 'font-bold', 'bg-indigo-50');
 			submitBtn.disabled = false;
 		});

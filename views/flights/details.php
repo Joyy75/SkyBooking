@@ -82,19 +82,19 @@
 							<div class="col-span-6 h-4"></div>
 						<?php endif;
 						
-						$bgClass = 'bg-white dark:bg-gray-700 border-2 border-green-300 dark:border-green-600 text-green-700 dark:text-green-400';
+						$bgClass = 'bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/30 dark:to-green-900/30 border-2 border-emerald-400 dark:border-emerald-500 text-emerald-700 dark:text-emerald-300';
 						$icon = 'fa-chair';
 						if ($status === 'pending') {
-							$bgClass = 'bg-yellow-100 dark:bg-yellow-900/30 border-2 border-yellow-400 dark:border-yellow-600 text-yellow-700 dark:text-yellow-400';
+							$bgClass = 'bg-gradient-to-br from-amber-100 to-yellow-100 dark:from-amber-900/40 dark:to-yellow-900/40 border-2 border-amber-400 dark:border-amber-500 text-amber-700 dark:text-amber-300';
 							$icon = 'fa-clock';
 						} elseif ($status === 'confirmed') {
-							$bgClass = 'bg-red-100 dark:bg-red-900/30 border-2 border-red-400 dark:border-red-600 text-red-700 dark:text-red-400';
+							$bgClass = 'bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900/40 dark:to-red-800/40 border-2 border-red-400 dark:border-red-600 text-red-700 dark:text-red-300';
 							$icon = 'fa-times';
 						}
 				?>
-					<div class="<?= $bgClass ?> aspect-square rounded-lg font-bold text-sm flex flex-col items-center justify-center hover:scale-105 transition">
-						<i class="fas <?= $icon ?> mb-1"></i>
-						<?= $i ?>
+					<div class="<?= $bgClass ?> aspect-square rounded-xl font-bold text-sm flex flex-col items-center justify-center hover:scale-105 transition shadow-md hover:shadow-xl">
+						<i class="fas <?= $icon ?> text-lg mb-1"></i>
+						<span class="text-xs font-bold"><?= $i ?></span>
 					</div>
 				<?php endfor; ?>
 			</div>
@@ -102,22 +102,22 @@
 			<!-- Legend -->
 			<div class="flex flex-wrap justify-center gap-4 md:gap-6 mt-8 text-sm">
 				<div class="flex items-center gap-2">
-					<div class="w-8 h-8 bg-white dark:bg-gray-700 border-2 border-green-300 dark:border-green-600 rounded-lg flex items-center justify-center">
-						<i class="fas fa-chair text-green-700 dark:text-green-400 text-xs"></i>
+					<div class="w-10 h-10 bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/30 dark:to-green-900/30 border-2 border-emerald-400 dark:border-emerald-500 rounded-xl flex items-center justify-center shadow-md">
+						<i class="fas fa-chair text-emerald-700 dark:text-emerald-300"></i>
 					</div>
-					<span class="text-gray-700 dark:text-gray-300 font-medium">Available</span>
+					<span class="text-gray-700 dark:text-gray-200 font-semibold">Available</span>
 				</div>
 				<div class="flex items-center gap-2">
-					<div class="w-8 h-8 bg-yellow-100 dark:bg-yellow-900/30 border-2 border-yellow-400 dark:border-yellow-600 rounded-lg flex items-center justify-center">
-						<i class="fas fa-clock text-yellow-700 dark:text-yellow-400 text-xs"></i>
+					<div class="w-10 h-10 bg-gradient-to-br from-amber-100 to-yellow-100 dark:from-amber-900/40 dark:to-yellow-900/40 border-2 border-amber-400 dark:border-amber-500 rounded-xl flex items-center justify-center shadow-md">
+						<i class="fas fa-clock text-amber-700 dark:text-amber-300"></i>
 					</div>
-					<span class="text-gray-700 dark:text-gray-300 font-medium">Pending</span>
+					<span class="text-gray-700 dark:text-gray-200 font-semibold">Pending</span>
 				</div>
 				<div class="flex items-center gap-2">
-					<div class="w-8 h-8 bg-red-100 dark:bg-red-900/30 border-2 border-red-400 dark:border-red-600 rounded-lg flex items-center justify-center">
-						<i class="fas fa-times text-red-700 dark:text-red-400 text-xs"></i>
+					<div class="w-10 h-10 bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900/40 dark:to-red-800/40 border-2 border-red-400 dark:border-red-600 rounded-xl flex items-center justify-center shadow-md">
+						<i class="fas fa-times text-red-700 dark:text-red-300"></i>
 					</div>
-					<span class="text-gray-700 dark:text-gray-300 font-medium">Booked</span>
+					<span class="text-gray-700 dark:text-gray-200 font-semibold">Booked</span>
 				</div>
 			</div>
 		</div>
