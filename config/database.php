@@ -8,8 +8,27 @@ function db(): PDO {
 	if ($pdo instanceof PDO) {
 		return $pdo;
 	}
-	$dsn = 'sqlite:' . DB_PATH;
-	$pdo = new PDO($dsn);
+	
+	// Check for MySQL environment variables (production)
+	$mysqlUrl = getenv('MYSQL_URL') ?: getenv('DATABASE_URL');
+	if ($mysqlUrl) {
+		// Parse MySQL URL: mysql://user:pass@host:port/database
+		$pdo = new PDO($mysqlUrl);
+	} elseif (getenv('MYSQL_HOST')) {
+		// Use individual MySQL credentials
+		$host = getenv('MYSQL_HOST');
+		$port = getenv('MYSQL_PORT') ?: '3306';
+		$db = getenv('MYSQL_DATABASE');
+		$user = getenv('MYSQL_USER');
+		$pass = getenv('MYSQL_PASSWORD');
+		$dsn = "mysql:host={$host};port={$port};dbname={$db};charset=utf8mb4";
+		$pdo = new PDO($dsn, $user, $pass);
+	} else {
+		// Fallback to SQLite for local development
+		$dsn = 'sqlite:' . DB_PATH;
+		$pdo = new PDO($dsn);
+	}
+	
 	$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
