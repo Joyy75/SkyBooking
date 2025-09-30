@@ -1,0 +1,57 @@
+========================================
+LANGUAGE SWITCHER - FLAGS ONLY (NO TEXT)
+========================================
+
+FILE: views/layout.php
+LOCATION: Around line 68-80
+
+FIND THIS CODE:
+---------------
+			<button class="p-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-gray-800 transition flex items-center gap-1">
+				<span class="iconify text-xl" data-icon="mdi:translate"></span>
+				<span class="text-sm font-medium hidden sm:inline"><?= strtoupper(getCurrentLanguage()) ?></span>
+			</button>
+			<div class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-lg shadow-xl border-2 border-indigo-100 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+				<?php foreach (getAvailableLanguages() as $code => $lang): ?>
+					<a href="index.php?r=language/set&lang=<?= $code ?>&redirect=<?= urlencode($currentRoute) ?>" 
+					   class="flex items-center gap-2 px-4 py-2 hover:bg-indigo-50 dark:hover:bg-gray-700 transition first:rounded-t-lg last:rounded-b-lg <?= getCurrentLanguage() === $code ? 'bg-indigo-50 dark:bg-gray-700' : '' ?>">
+						<span class="text-xl"><?= $lang['flag'] ?></span>
+						<span class="text-sm font-medium text-gray-700 dark:text-gray-200"><?= $lang['name'] ?></span>
+					</a>
+				<?php endforeach; ?>
+			</div>
+
+
+REPLACE WITH THIS:
+------------------
+			<button class="p-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-gray-800 transition flex items-center gap-1">
+				<span class="text-2xl"><?= getAvailableLanguages()[getCurrentLanguage()]['flag'] ?></span>
+			</button>
+			<div class="absolute right-0 mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl border-2 border-indigo-100 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 p-2">
+				<div class="grid grid-cols-3 gap-2">
+					<?php foreach (getAvailableLanguages() as $code => $lang): ?>
+						<a href="index.php?r=language/set&lang=<?= $code ?>&redirect=<?= urlencode($currentRoute) ?>" 
+						   class="flex items-center justify-center w-12 h-12 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 transition <?= getCurrentLanguage() === $code ? 'bg-indigo-50 dark:bg-gray-700 ring-2 ring-indigo-500' : '' ?>"
+						   title="<?= $lang['name'] ?>">
+							<span class="text-3xl"><?= $lang['flag'] ?></span>
+						</a>
+					<?php endforeach; ?>
+				</div>
+			</div>
+
+
+WHAT THIS DOES:
+---------------
+✅ Shows ONLY the current language flag (no text)
+✅ Dropdown shows flags in a 3x2 grid (6 languages)
+✅ Hover shows language name as tooltip
+✅ Selected language has a ring highlight
+✅ Larger flag icons (text-3xl)
+✅ Clean, modern look
+
+RESULT:
+-------
+Header will show: 🇺🇸 (or 🇪🇸 🇫🇷 🇨🇳 🇰🇷 🇲🇲)
+Dropdown will show a grid of all 6 flags
+
+========================================
