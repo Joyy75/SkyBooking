@@ -8,8 +8,27 @@ function db(): PDO {
 	if ($pdo instanceof PDO) {
 		return $pdo;
 	}
-	$dsn = 'sqlite:' . DB_PATH;
-	$pdo = new PDO($dsn);
+	
+	// Check for MySQL environment variables (production)
+	$mysqlUrl = getenv('MYSQL_URL') ?: getenv('DATABASE_URL');
+	if ($mysqlUrl) {
+		// Parse MySQL URL: mysql://user:pass@host:port/database
+		$pdo = new PDO($mysqlUrl);
+	} elseif (getenv('MYSQL_HOST')) {
+		// Use individual MySQL credentials
+		$host = getenv('MYSQL_HOST');
+		$port = getenv('MYSQL_PORT') ?: '3306';
+		$db = getenv('MYSQL_DATABASE');
+		$user = getenv('MYSQL_USER');
+		$pass = getenv('MYSQL_PASSWORD');
+		$dsn = "mysql:host={$host};port={$port};dbname={$db};charset=utf8mb4";
+		$pdo = new PDO($dsn, $user, $pass);
+	} else {
+		// Fallback to SQLite for local development
+		$dsn = 'sqlite:' . DB_PATH;
+		$pdo = new PDO($dsn);
+	}
+	
 	$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
@@ -19,69 +38,123 @@ function db(): PDO {
 }
 
 function initialize_schema(PDO $pdo): void {
-	$pdo->exec('CREATE TABLE IF NOT EXISTS flights (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		flight_number TEXT NOT NULL,
-		origin TEXT NOT NULL,
-		destination TEXT NOT NULL,
-		departure_time TEXT NOT NULL,
-		arrival_time TEXT NOT NULL,
-		price_cents INTEGER NOT NULL,
-		total_seats INTEGER NOT NULL
-	)');
-
-	$pdo->exec('CREATE TABLE IF NOT EXISTS bookings (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		flight_id INTEGER NOT NULL,
-		passenger_name TEXT NOT NULL,
-		seat_number INTEGER NOT NULL,
-		booked_at TEXT NOT NULL,
-		confirmed INTEGER NOT NULL DEFAULT 0,
-		user_id INTEGER,
-		UNIQUE(flight_id, seat_number),
-		FOREIGN KEY(flight_id) REFERENCES flights(id) ON DELETE CASCADE,
-		FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE SET NULL
-	)');
-
-	$pdo->exec('CREATE TABLE IF NOT EXISTS users (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		email TEXT UNIQUE NOT NULL,
-		password_hash TEXT NOT NULL,
-		first_name TEXT NOT NULL,
-		last_name TEXT NOT NULL,
-		country TEXT,
-		avatar_url TEXT,
-		created_at TEXT NOT NULL
-	)');
-
-	// Notifications table for user alerts (e.g., booking confirmation)
-	$pdo->exec('CREATE TABLE IF NOT EXISTS notifications (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		user_id INTEGER NOT NULL,
-		message TEXT NOT NULL,
-		is_read INTEGER NOT NULL DEFAULT 0,
-		created_at TEXT NOT NULL,
-		FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
-	)');
-
-	// Safe migration: ensure confirmed column exists
-	$cols = $pdo->query("PRAGMA table_info(bookings)")->fetchAll();
-	$hasConfirmed = false;
-	foreach ($cols as $col) {
-		if (isset($col['name']) && $col['name'] === 'confirmed') { $hasConfirmed = true; break; }
-	}
-	if (!$hasConfirmed) {
-		$pdo->exec('ALTER TABLE bookings ADD COLUMN confirmed INTEGER NOT NULL DEFAULT 0');
-	}
-
-	// Safe migration: ensure user_id column exists in bookings
-	$cols = $pdo->query("PRAGMA table_info(bookings)")->fetchAll();
-	$hasUserId = false;
-	foreach ($cols as $col) {
-		if (isset($col['name']) && $col['name'] === 'user_id') { $hasUserId = true; break; }
-	}
-	if (!$hasUserId) {
-		$pdo->exec('ALTER TABLE bookings ADD COLUMN user_id INTEGER REFERENCES users(id) ON DELETE SET NULL');
+	$driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+	$isMySQL = ($driver === 'mysql');
+	
+	if ($isMySQL) {
+		// MySQL Schema
+		$pdo->exec('CREATE TABLE IF NOT EXISTS users (
+			id INT AUTO_INCREMENT PRIMARY KEY,
+			email VARCHAR(255) UNIQUE NOT NULL,
+			password_hash VARCHAR(255) NOT NULL,
+			first_name VARCHAR(100) NOT NULL,
+			last_name VARCHAR(100) NOT NULL,
+			country VARCHAR(100),
+			avatar_url VARCHAR(500),
+			created_at DATETIME NOT NULL,
+			INDEX idx_email (email)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
+		
+		$pdo->exec('CREATE TABLE IF NOT EXISTS flights (
+			id INT AUTO_INCREMENT PRIMARY KEY,
+			flight_number VARCHAR(50) NOT NULL,
+			origin VARCHAR(100) NOT NULL,
+			destination VARCHAR(100) NOT NULL,
+			departure_time DATETIME NOT NULL,
+			arrival_time DATETIME NOT NULL,
+			price_cents INT NOT NULL,
+			total_seats INT NOT NULL,
+			INDEX idx_route (origin, destination),
+			INDEX idx_departure (departure_time)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
+		
+		$pdo->exec('CREATE TABLE IF NOT EXISTS bookings (
+			id INT AUTO_INCREMENT PRIMARY KEY,
+			flight_id INT NOT NULL,
+			passenger_name VARCHAR(200) NOT NULL,
+			seat_number INT NOT NULL,
+			booked_at DATETIME NOT NULL,
+			confirmed TINYINT NOT NULL DEFAULT 0,
+			user_id INT,
+			UNIQUE KEY unique_seat (flight_id, seat_number),
+			FOREIGN KEY (flight_id) REFERENCES flights(id) ON DELETE CASCADE,
+			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+			INDEX idx_user (user_id)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
+		
+		$pdo->exec('CREATE TABLE IF NOT EXISTS notifications (
+			id INT AUTO_INCREMENT PRIMARY KEY,
+			user_id INT NOT NULL,
+			message TEXT NOT NULL,
+			is_read TINYINT NOT NULL DEFAULT 0,
+			created_at DATETIME NOT NULL,
+			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+			INDEX idx_user_read (user_id, is_read)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
+	} else {
+		// SQLite Schema
+		$pdo->exec('CREATE TABLE IF NOT EXISTS users (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			email TEXT UNIQUE NOT NULL,
+			password_hash TEXT NOT NULL,
+			first_name TEXT NOT NULL,
+			last_name TEXT NOT NULL,
+			country TEXT,
+			avatar_url TEXT,
+			created_at TEXT NOT NULL
+		)');
+		
+		$pdo->exec('CREATE TABLE IF NOT EXISTS flights (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			flight_number TEXT NOT NULL,
+			origin TEXT NOT NULL,
+			destination TEXT NOT NULL,
+			departure_time TEXT NOT NULL,
+			arrival_time TEXT NOT NULL,
+			price_cents INTEGER NOT NULL,
+			total_seats INTEGER NOT NULL
+		)');
+		
+		$pdo->exec('CREATE TABLE IF NOT EXISTS bookings (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			flight_id INTEGER NOT NULL,
+			passenger_name TEXT NOT NULL,
+			seat_number INTEGER NOT NULL,
+			booked_at TEXT NOT NULL,
+			confirmed INTEGER NOT NULL DEFAULT 0,
+			user_id INTEGER,
+			UNIQUE(flight_id, seat_number),
+			FOREIGN KEY(flight_id) REFERENCES flights(id) ON DELETE CASCADE,
+			FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE SET NULL
+		)');
+		
+		$pdo->exec('CREATE TABLE IF NOT EXISTS notifications (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			user_id INTEGER NOT NULL,
+			message TEXT NOT NULL,
+			is_read INTEGER NOT NULL DEFAULT 0,
+			created_at TEXT NOT NULL,
+			FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+		)');
+		
+		// SQLite migrations
+		$cols = $pdo->query("PRAGMA table_info(bookings)")->fetchAll();
+		$hasConfirmed = false;
+		foreach ($cols as $col) {
+			if (isset($col['name']) && $col['name'] === 'confirmed') { $hasConfirmed = true; break; }
+		}
+		if (!$hasConfirmed) {
+			$pdo->exec('ALTER TABLE bookings ADD COLUMN confirmed INTEGER NOT NULL DEFAULT 0');
+		}
+		
+		$cols = $pdo->query("PRAGMA table_info(bookings)")->fetchAll();
+		$hasUserId = false;
+		foreach ($cols as $col) {
+			if (isset($col['name']) && $col['name'] === 'user_id') { $hasUserId = true; break; }
+		}
+		if (!$hasUserId) {
+			$pdo->exec('ALTER TABLE bookings ADD COLUMN user_id INTEGER REFERENCES users(id) ON DELETE SET NULL');
+		}
 	}
 
 	// Seed minimal data if empty
